@@ -9,8 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      packages: read
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -19,9 +18,9 @@ jobs:
       with:
         node-version: 25
         registry-url: https://npm.pkg.github.com/
-    - run: npm i
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: |
+        printf "\n//npm.pkg.github.com/:_authToken=\"${{ secrets.GITHUB_TOKEN }}\"" >> .npmrc
+        npm i
     - run: tsc
     - name: Docker login
       uses: docker/login-action@v3

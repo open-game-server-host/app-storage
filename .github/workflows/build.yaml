@@ -19,12 +19,10 @@ jobs:
       with:
         node-version: 25
         registry-url: https://npm.pkg.github.com/
-    - run: |
-        printf "\n//npm.pkg.github.com/:_authToken=\"$TOKEN\"" >> .npmrc
-        npm i
-        tsc
+    - run: npm i
       env:
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: tsc
     - name: Docker login
       uses: docker/login-action@v3
       with:

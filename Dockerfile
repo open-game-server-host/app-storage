@@ -10,6 +10,5 @@ ADD node_modules node_modules
 ADD build build
 RUN adduser --uid $UID --disabled-password --gecos "" $USERNAME && chown -R $UID $WORK_DIR
 USER $USERNAME
-RUN rm -rf 
 
 ENTRYPOINT ["node", "build/apparchive.js"]

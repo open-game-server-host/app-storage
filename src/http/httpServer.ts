@@ -1,5 +1,5 @@
 import { expressErrorHandler, Logger } from "@open-game-server-host/backend-lib";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { param } from "express-validator";
 import { archiveHttpRouter } from "./archiveHttpRoutes";
 
@@ -12,7 +12,13 @@ export async function initHttpServer(logger: Logger) {
         param("variantId").isString(),
         param("versionId").isString(),
         param("build").isInt().toInt()
-    ], archiveHttpRouter);
+    ], (req: Request, res: Response, next: NextFunction) => {
+        res.locals.appId = req.params.appId;
+        res.locals.variantId = req.params.variantId;
+        res.locals.versionId = req.params.versionId;
+        res.locals.build = req.params.build;
+        next();
+    }, archiveHttpRouter);
 
     router.use(expressErrorHandler);
 

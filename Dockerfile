@@ -15,7 +15,8 @@ ADD tsconfig.json tsconfig.json
 ADD src src
 ADD .npmrc .npmrc
 
-RUN export "NODE_AUTH_TOKEN=$NODE_AUTH_TOKEN" && npm i
+# RUN export "NODE_AUTH_TOKEN=$NODE_AUTH_TOKEN"
+RUN npm i
 RUN tsc
 
 RUN rm -rf src package.json package-lock.json tsconfig.json .npmrc

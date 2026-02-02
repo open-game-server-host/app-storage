@@ -31,9 +31,6 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Set up Docker
       uses: docker/setup-buildx-action@v3
-    - run: ls -l
-    - run: ls -l build
-    - run: ls -l node_modules
     - name: Build and Publish Docker image
       uses: docker/build-push-action@v6
       with:

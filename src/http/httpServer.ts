@@ -1,11 +1,12 @@
-import { expressErrorHandler, Logger } from "@open-game-server-host/backend-lib";
+import { Logger } from "@open-game-server-host/backend-lib";
 import express, { NextFunction, Request, Response } from "express";
 import { param } from "express-validator";
 import { archiveHttpRouter } from "./archiveHttpRoutes";
 
 export async function initHttpServer(logger: Logger) {
     const router = express();
-    router.use(express.json());
+
+    router.get("/v1/ping", (req, res) => res.send());
 
     router.use("/v1/archive/:appId/:variantId/:versionId/:build", [
         param("appId").isString(),
@@ -20,7 +21,7 @@ export async function initHttpServer(logger: Logger) {
         next();
     }, archiveHttpRouter);
 
-    router.use(expressErrorHandler);
+    // router.use(expressErrorHandler);
 
     const port = 8080; // TODO should this be a config or just hard coded?
     await new Promise<void>(res => {

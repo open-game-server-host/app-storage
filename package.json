@@ -1,14 +1,14 @@
 {
-  "name": "@open-game-server-host/app-archive",
+  "name": "@open-game-server-host/app-storage",
   "version": "1.0.0",
   "description": "",
-  "main": "build/apparchive.js",
+  "main": "build/appstorage.js",
   "scripts": {
-    "start": "tsc && node build/apparchive.js"
+    "start": "tsc && node build/appstorage.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/open-game-server-host/app-archive.git"
+    "url": "git+https://github.com/open-game-server-host/app-storage.git"
   },
   "dependencies": {
     "@open-game-server-host/backend-lib": "^1.0.7",

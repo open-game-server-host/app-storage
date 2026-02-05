@@ -1,4 +1,4 @@
-import { Logger } from "@open-game-server-host/backend-lib";
+import { expressErrorHandler, Logger } from "@open-game-server-host/backend-lib";
 import express, { NextFunction, Request, Response } from "express";
 import { param } from "express-validator";
 import { archiveHttpRouter } from "./archiveHttpRoutes";
@@ -21,7 +21,7 @@ export async function initHttpServer(logger: Logger) {
         next();
     }, archiveHttpRouter);
 
-    // router.use(expressErrorHandler);
+    router.use(expressErrorHandler);
 
     const port = 8080; // TODO should this be a config or just hard coded?
     await new Promise<void>(res => {

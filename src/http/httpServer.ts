@@ -1,4 +1,4 @@
-import { Logger } from "@open-game-server-host/backend-lib";
+import { formatErrorResponseBody, getErrorHttpStatus, Logger } from "@open-game-server-host/backend-lib";
 import express, { NextFunction, Request, Response } from "express";
 import { param } from "express-validator";
 import { archiveHttpRouter } from "./archiveHttpRoutes";
@@ -21,7 +21,12 @@ export async function initHttpServer(logger: Logger) {
         next();
     }, archiveHttpRouter);
 
-    // router.use(expressErrorHandler);
+    // Strip out the application/json requirement from the default "expressErrorHandler" from backend-lib
+    router.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+        const responseBody = formatErrorResponseBody(error);
+        res.status(getErrorHttpStatus(responseBody.error));
+        res.send(responseBody);
+    });
 
     const port = 8080; // TODO should this be a config or just hard coded?
     await new Promise<void>(res => {

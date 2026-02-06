@@ -12,7 +12,7 @@ interface ArchiveLocals {
     versionId: string;
     build: number;
 }
-type ArchiveResponse = Response<any, ArchiveLocals>;
+type ArchiveResponse<T = any> = Response<T, ArchiveLocals>;
 
 const uploadLogger = new Logger("UPLOAD");
 archiveHttpRouter.put("/", multer({ dest: "archives", preservePath: true }).single("file"), async (req: Request, res: ArchiveResponse) => {
@@ -48,4 +48,15 @@ archiveHttpRouter.get("/", async (req: Request, res: ArchiveResponse) => {
 
 archiveHttpRouter.delete("/", async (req: Request, res: ArchiveResponse) => {
     // TODO this will be used by a cron job to delete old archives - it has to be called by something else because this app is designed to be stateless for multiple instances
+});
+
+interface ExistsResponse {
+    exists: boolean;
+}
+archiveHttpRouter.get("/exists", (req: Request, res: ArchiveResponse<ExistsResponse>) => {
+    const { appId, variantId, versionId, build } = res.locals;
+    const path = getArchivePath(appId, variantId, versionId, build);
+    res.send({
+        exists: existsSync(path)
+    });
 });

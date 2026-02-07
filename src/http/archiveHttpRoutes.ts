@@ -14,8 +14,9 @@ interface ArchiveLocals {
 }
 type ArchiveResponse<T = any> = Response<T, ArchiveLocals>;
 
+const multerInstance = multer({ dest: "archives", preservePath: true });
 const uploadLogger = new Logger("UPLOAD");
-archiveHttpRouter.put("/", multer({ dest: "archives", preservePath: true }).single("file"), async (req: Request, res: ArchiveResponse) => {
+archiveHttpRouter.put("/", multerInstance.single("file"), async (req: Request, res: ArchiveResponse) => {
     // TODO internal request auth middleware before multer
 
     const { appId, variantId, versionId, build } = res.locals;

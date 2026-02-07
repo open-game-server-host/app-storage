@@ -1,7 +1,7 @@
 import { Logger, OGSHError } from "@open-game-server-host/backend-lib";
 import { Request, Response, Router } from "express";
-import { existsSync } from "node:fs";
-import { getArchivePath } from "../utils";
+import { createReadStream, existsSync, statSync } from "node:fs";
+import { getArchiveName, getArchivePath } from "../utils";
 
 export const archiveHttpRouter = Router();
 
@@ -25,12 +25,18 @@ archiveHttpRouter.get("/", async (req: Request, res: ArchiveResponse) => {
     const logger = new Logger(`${++downloads}`);
     const name = `${appId} / ${variantId} / ${versionId} / ${build}`;
     logger.info(`Started downloading ${name}`);
-    res.download(path, error => {
-        if (error) {
-            throw new OGSHError("general/unspecified", error)
-        }
-        logger.info(`Finished downloading ${name}`);
+
+    res.setHeader("Content-Disposition", `attachment; filename="${getArchiveName(appId, variantId, versionId, build)}"`);
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Length", statSync(path).size);
+
+    const readStream = createReadStream(path);
+    readStream.on("error", error => {
+        throw new OGSHError("general/unspecified", error);
     });
+    readStream.on("close", () => logger.info(`Finished downloading ${name}`));
+
+    readStream.pipe(res);
 });
 
 archiveHttpRouter.delete("/", async (req: Request, res: ArchiveResponse) => {

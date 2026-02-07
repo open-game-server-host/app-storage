@@ -1,7 +1,6 @@
 import { Logger, OGSHError } from "@open-game-server-host/backend-lib";
 import { Request, Response, Router } from "express";
-import multer from "multer";
-import { existsSync, renameSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { getArchivePath } from "../utils";
 
 export const archiveHttpRouter = Router();
@@ -13,19 +12,6 @@ interface ArchiveLocals {
     build: number;
 }
 type ArchiveResponse<T = any> = Response<T, ArchiveLocals>;
-
-const multerInstance = multer({ dest: "archives", preservePath: true });
-const uploadLogger = new Logger("UPLOAD");
-archiveHttpRouter.put("/", multerInstance.single("file"), async (req: Request, res: ArchiveResponse) => {
-    // TODO internal request auth middleware before multer
-
-    const { appId, variantId, versionId, build } = res.locals;
-    const path = getArchivePath(appId, variantId, versionId, build);
-    renameSync(`${req.file?.destination}/${req.file?.filename}`, path);
-    uploadLogger.info(`${appId} / ${variantId} / ${versionId} / ${build}`);
-
-    res.send();
-});
 
 // TODO each daemon will have its own API key that has to be validated here
 let downloads = 0;

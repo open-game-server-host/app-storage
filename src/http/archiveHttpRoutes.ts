@@ -22,7 +22,7 @@ archiveHttpRouter.get("/", async (req: Request, res: ArchiveResponse) => {
         throw new OGSHError("app/version-not-found", `could not find file for app id '${appId}' variant id '${variantId}' version id '${versionId}' build '${build}' (path: ${path})`);
     }
 
-    const logger = new Logger(`${++downloads}`);
+    const logger = new Logger(`DOWNLOADS: ${++downloads}`);
     const name = `${appId} / ${variantId} / ${versionId} / ${build}`;
     logger.info(`Started downloading ${name}`);
 

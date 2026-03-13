@@ -13,7 +13,6 @@ interface ArchiveLocals {
 }
 type ArchiveResponse<T = any> = Response<T, ArchiveLocals>;
 
-// TODO each daemon will have its own API key that has to be validated here
 let downloads = 0;
 archiveHttpRouter.get("/", async (req: Request, res: ArchiveResponse) => {
     const { appId, variantId, versionId, build } = res.locals;
@@ -32,15 +31,11 @@ archiveHttpRouter.get("/", async (req: Request, res: ArchiveResponse) => {
 
     const readStream = createReadStream(path);
     readStream.on("error", error => {
-        throw new OGSHError("general/unspecified", error);
+        throw new OGSHError("app/download-failed", error);
     });
     readStream.on("close", () => logger.info(`Finished downloading ${name}`));
 
     readStream.pipe(res);
-});
-
-archiveHttpRouter.delete("/", async (req: Request, res: ArchiveResponse) => {
-    // TODO this will be used by a cron job to delete old archives - it has to be called by something else because this app is designed to be stateless for multiple instances
 });
 
 interface ExistsResponse {

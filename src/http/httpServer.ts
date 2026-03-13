@@ -1,4 +1,4 @@
-import { formatErrorResponseBody, getErrorHttpStatus, Logger } from "@open-game-server-host/backend-lib";
+import { formatErrorResponseBody, getApiConfig, getErrorHttpStatus, Logger, OGSHError } from "@open-game-server-host/backend-lib";
 import express, { NextFunction, Request, Response } from "express";
 import { param } from "express-validator";
 import { archiveHttpRouter } from "./archiveHttpRoutes";
@@ -13,7 +13,23 @@ export async function initHttpServer(logger: Logger) {
         param("variantId").isString(),
         param("versionId").isString(),
         param("build").isInt().toInt()
-    ], (req: Request, res: Response, next: NextFunction) => {
+    ], async (req: Request, res: Response, next: NextFunction) => {
+        const apiConfig = await getApiConfig();
+        if (!req.headers.authorization) {
+            throw new OGSHError("auth/invalid", `authorization header not found`);
+        }
+        const response = await fetch(`${apiConfig.url}/v1/daemon/auth`, {
+            method: "GET",
+            headers: {
+                authorization: req.headers.authorization,
+                "content-type": "application/json"
+            }
+        });
+        if (response.status !== 200) {
+            throw new OGSHError("auth/invalid", `daemon invalid api key`);
+        }
+        next();
+    }, (req: Request, res: Response, next: NextFunction) => {
         res.locals.appId = req.params.appId;
         res.locals.variantId = req.params.variantId;
         res.locals.versionId = req.params.versionId;
